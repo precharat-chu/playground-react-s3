@@ -31,18 +31,19 @@ jobs:
           command: npm run build
           name: Build
       - persist_to_workspace:
-          root: ~/project
+          root: .
           paths:
-            - .
+            - build
   sync:
     executor: node/default
     steps:
       - attach_workspace:
-          at: ~/project
+          at: .
       - run:
           name: cat build
           command: |
-            ls ~/project
+            cd build
+            ls
 workflows:
   version: 2
   provision-terraform:

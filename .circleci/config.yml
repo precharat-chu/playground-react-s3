@@ -7,9 +7,12 @@ jobs:
     steps:
       - checkout
       - run:
-          name: terraform init & plan
+          name: terraform work directory
           command: |
             cd terraform
+      - run:
+          name: terraform init & plan
+          command: |
             terraform init -input=false
             terraform plan -out tfapply -lock=false
       - persist_to_workspace:

@@ -13,10 +13,12 @@ jobs:
           name: Create .terraformrc file locally
       - terraform/fmt:
           path: ./terraform
-      # - terraform/validate:
-      #     path: ./terraform
-      # - terraform/init:
-      #     path: ./terraform
+      - terraform/validate:
+          path: ./terraform
+      - terraform/init:
+          path: ./terraform
+      - terraform/plan:
+          path: ./terraform
 
 workflows:
   s3:

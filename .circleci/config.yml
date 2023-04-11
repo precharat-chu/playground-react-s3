@@ -1,4 +1,7 @@
 version: 2.1
+orbs:
+  node: circleci/node@5.0.2
+
 jobs:
   provision-s3:
     working_directory: /tmp/project
@@ -17,6 +20,16 @@ jobs:
           command: |
             cd terraform
             terraform apply -lock=false -auto-approve tfapply
+
+  build:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          command: npm run build
+          name: Build app
 
 workflows:
   version: 2

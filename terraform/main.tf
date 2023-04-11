@@ -68,16 +68,17 @@ module "s3-bucket" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+  website = {
+    # conflicts with "error_document"
+    #        redirect_all_requests_to = {
+    #          host_name = "https://modules.tf"
+    #        }
+
+    index_document = "index.html"
+    error_document = "error.html"
+
+  }
 
 }
 
-website = {
-  # conflicts with "error_document"
-  #        redirect_all_requests_to = {
-  #          host_name = "https://modules.tf"
-  #        }
 
-  index_document = "index.html"
-  error_document = "error.html"
-
-}

@@ -15,12 +15,12 @@ jobs:
           command: |
             cd terraform
             terraform init -input=false
-            terraform plan -out tfapply -lock=false
+            terraform plan -out tfapply
       - run:
           name: terraform apply
           command: |
             cd terraform
-            terraform apply -lock=false -auto-approve tfapply
+            terraform apply -auto-approve tfapply
 
   build:
     executor: node/default

@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  plan-apply:
+  provision-s3:
     working_directory: /tmp/project
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
@@ -12,46 +12,17 @@ jobs:
             cd terraform
             terraform init -input=false
             terraform plan -out tfapply -lock=false
-      - persist_to_workspace:
-          root: terraform
-          paths:
-            - tfapply
-  apply:
-    docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-    steps:
-      - attach_workspace:
-          at: .
       - run:
           name: terraform
           command: |
+            cd terraform
             terraform apply -lock=false -auto-approve tfapply
 
 workflows:
   version: 2
   provision-terraform:
     jobs:
-      - plan-apply:
+      - provision-s3:
           context:
             - playground-terraform
             - playground-aws
-      - hold-apply:
-          type: approval
-          requires:
-            - plan-apply
-      - apply:
-          requires:
-            - hold-apply
-          context:
-            - playground-terraform
-            - playground-aws
-      # - plan-destroy:
-      #     requires:
-      #       - apply
-      # - hold-destroy:
-      #     type: approval
-      #     requires:
-      #       - plan-destroy
-      # - destroy:
-      #     requires:
-      #       - hold-destroy

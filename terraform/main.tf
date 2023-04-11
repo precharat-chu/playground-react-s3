@@ -53,7 +53,7 @@ provider "aws" {
 # }
 
 
-module "s3-bucket" {
+module "s3_bucket" {
   source  = "app.terraform.io/precharat-chu/s3-bucket/aws"
   version = "3.6.0"
 

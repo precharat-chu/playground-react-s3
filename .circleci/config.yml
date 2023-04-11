@@ -7,11 +7,6 @@ jobs:
     steps:
       - checkout
       - run:
-          command: >-
-            echo "credentials \"app.terraform.io\" {token =
-            \"$TERRAFORM_TOKEN\"}" > $HOME/.terraformrc
-          name: Create .terraformrc file locally
-      - run:
           name: terraform init & plan
           command: |
             cd terraform

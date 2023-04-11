@@ -23,17 +23,10 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: cat file from workspace
+          name: terraform
           command: |
-            cat tfapply
-      # - run:
-      #     name: terraform
-      #     command: |
-      #       terraform apply -auto-approve tfapply
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
+            terraform apply -auto-approve tfapply
+
 workflows:
   version: 2
   provision-terraform:

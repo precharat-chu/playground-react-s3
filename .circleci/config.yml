@@ -25,7 +25,7 @@ jobs:
       - run:
           name: terraform
           command: |
-            terraform apply -auto-approve tfapply
+            terraform apply -lock=false -auto-approve tfapply
 
 workflows:
   version: 2

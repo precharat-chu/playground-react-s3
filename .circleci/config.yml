@@ -20,7 +20,8 @@ workflows:
   version: 2
   provision-terraform:
     jobs:
-      - plan-apply
+      - plan-apply:
+          context: playground-terraform
       # - hold-apply:
       #     type: approval
       #     requires:

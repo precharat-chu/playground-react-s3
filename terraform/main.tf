@@ -27,40 +27,8 @@ provider "aws" {
 
 data "aws_caller_identity" "current" {}
 
-resource "aws_iam_role" "this" {
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-}
 
-data "aws_iam_policy_document" "bucket_policy" {
-  statement {
-    principals {
-      type        = "AWS"
-      identifiers = [aws_iam_role.this.arn]
-    }
 
-    actions = [
-      "s3:ListBucket",
-    ]
-
-    resources = [
-      "arn:aws:s3:::${local.bucket_name}",
-    ]
-  }
-}
 
 
 module "s3_bucket" {
@@ -69,15 +37,25 @@ module "s3_bucket" {
 
   bucket = local.bucket_name
 
-  attach_policy                         = true
-  policy                                = data.aws_iam_policy_document.bucket_policy.json
-  attach_deny_insecure_transport_policy = true
-  attach_require_latest_tls_policy      = true
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+  attach_policy = true
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Sid" : "PublicReadGetObject",
+        "Effect" : "Allow",
+        "Principal" : "*",
+        "Action" : [
+          "s3:GetObject"
+        ],
+        "Resource" : [
+          "arn:aws:s3:::${local.bucket_name}/*"
+        ]
+      }
+    ]
+  })
+  # attach_deny_insecure_transport_policy = true
+  # attach_require_latest_tls_policy      = true
 
   control_object_ownership = true
   object_ownership         = "BucketOwnerPreferred"

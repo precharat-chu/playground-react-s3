@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@5.0.2
+  aws-s3: circleci/aws-s3@3.1.1
 
 jobs:
   provision-s3:
@@ -39,11 +40,10 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run:
-          name: cat build
-          command: |
-            cd build
-            ls
+      - aws-s3/sync:
+          from: build
+          to: s3://playground-react-s3
+
 workflows:
   version: 2
   provision-terraform:
@@ -57,3 +57,5 @@ workflows:
           requires:
             - provision-s3
             - build
+          context:
+            - playground-aws

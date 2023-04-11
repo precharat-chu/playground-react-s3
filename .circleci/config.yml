@@ -19,6 +19,7 @@ jobs:
           path: ./terraform
       - terraform/plan:
           path: ./terraform
+          var: "-lock=false"
 
 workflows:
   s3:

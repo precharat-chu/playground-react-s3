@@ -13,9 +13,9 @@ jobs:
             terraform init -input=false
             terraform plan -out tfapply -lock=false
       - persist_to_workspace:
-          root: .
+          root: terraform
           paths:
-            - .
+            - tfapply
   apply:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
@@ -23,9 +23,13 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: terraform
+          name: cat file from workspace
           command: |
-            terraform apply -auto-approve tfapply
+            cat tfapply
+      # - run:
+      #     name: terraform
+      #     command: |
+      #       terraform apply -auto-approve tfapply
       - persist_to_workspace:
           root: .
           paths:

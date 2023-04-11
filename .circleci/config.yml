@@ -16,7 +16,7 @@ jobs:
             terraform init -input=false
             terraform plan -out tfapply -lock=false
       - run:
-          name: terraform
+          name: terraform apply
           command: |
             cd terraform
             terraform apply -lock=false -auto-approve tfapply
@@ -29,8 +29,20 @@ jobs:
           pkg-manager: npm
       - run:
           command: npm run build
-          name: Build app
-
+          name: Build
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+  sync:
+    executor: node/default
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: cat build
+          command: |
+            ls ~/project
 workflows:
   version: 2
   provision-terraform:
@@ -39,3 +51,8 @@ workflows:
           context:
             - playground-terraform
             - playground-aws
+      - build
+      - sync:
+          requires:
+            - provision-s3
+            - build

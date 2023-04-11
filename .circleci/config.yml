@@ -38,13 +38,16 @@ workflows:
           context:
             - playground-terraform
             - playground-aws
-      # - hold-apply:
-      #     type: approval
-      #     requires:
-      #       - plan-apply
-      # - apply:
-      #     requires:
-      #       - hold-apply
+      - hold-apply:
+          type: approval
+          requires:
+            - plan-apply
+      - apply:
+          requires:
+            - hold-apply
+          context:
+            - playground-terraform
+            - playground-aws
       # - plan-destroy:
       #     requires:
       #       - apply

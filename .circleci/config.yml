@@ -4,23 +4,23 @@ orbs:
   aws-s3: circleci/aws-s3@3.1.1
 
 jobs:
-  provision-s3:
-    working_directory: /tmp/project
-    docker:
-      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-    steps:
-      - checkout
-      - run:
-          name: terraform init & plan
-          command: |
-            cd terraform
-            terraform init -input=false
-            terraform plan -out tfapply
-      - run:
-          name: terraform apply
-          command: |
-            cd terraform
-            terraform apply -auto-approve tfapply
+  # provision-s3:
+  #   working_directory: /tmp/project
+  #   docker:
+  #     - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: terraform init & plan
+  #         command: |
+  #           cd terraform
+  #           terraform init -input=false
+  #           terraform plan -out tfapply
+  #     - run:
+  #         name: terraform apply
+  #         command: |
+  #           cd terraform
+  #           terraform apply -auto-approve tfapply
 
   build:
     executor: node/default
@@ -37,21 +37,20 @@ jobs:
             - build
   sync:
     executor: node/default
+    parameters:
+      bucket:
+        type: string
     steps:
       - attach_workspace:
           at: .
       - aws-s3/sync:
           from: build
-          to: s3://playground-react-s3
+          to: s3://<< parameters.bucket >>
 
 workflows:
   version: 2
-  provision-terraform:
+  dev:
     jobs:
-      - provision-s3:
-          context:
-            - playground-terraform
-            - playground-aws
       - build
       - sync:
           requires:
@@ -59,3 +58,35 @@ workflows:
             - build
           context:
             - playground-aws
+          bucket: dev-playground-react-s3
+          filters:
+            branches:
+              only:
+                - main
+  prod:
+    jobs:
+      - build
+      - sync:
+          requires:
+            - provision-s3
+            - build
+          context:
+            - playground-aws
+          bucket: prod-playground-react-s3
+          filters:
+            branches:
+              only:
+                - develop
+  # provision-terraform:
+  #   jobs:
+  #     - provision-s3:
+  #         context:
+  #           - playground-terraform
+  #           - playground-aws
+  #     - build
+  #     - sync:
+  #         requires:
+  #           - provision-s3
+  #           - build
+  #         context:
+  #           - playground-aws
